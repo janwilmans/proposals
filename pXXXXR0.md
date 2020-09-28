@@ -14,7 +14,7 @@ Draft Proposal, 28 September 2020
   * ISO JTC1/SC22/WG21: Programming Language C++
   
 ### Current version:
-  * https://github.com/janwilmans/proposals
+  * https://github.com/janwilmans/proposals/blob/master/pXXXXR0.md
 
 ### Reply To: 
   * Jan Wilmans <janwilmans@gmail.com>
