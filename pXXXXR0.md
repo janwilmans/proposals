@@ -93,7 +93,7 @@ could that be optimized to effectively do what we want?
 # Acknowledgements
 
 * this proposal came out of a brief twitter-thread with @nliber
-* examples taken from Mustafa Kemal GILOR's stackoverflow post
+* examples taken out of context from Mustafa Kemal GILOR's stackoverflow post
 
 # References
 
