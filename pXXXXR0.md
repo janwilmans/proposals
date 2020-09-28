@@ -54,6 +54,8 @@ std::string s(std::reserve, 1000);
 std::vector<int> v(std::reserve, 1000);
 ```
 
+The std::reserve syntax here is to disallow `std::string s({}, 1000);`
+
 ## Overview
 
 ## Consistency
@@ -92,7 +94,7 @@ could that be optimized to effectively do what we want?
 
 # Acknowledgements
 
-* this proposal came out of a brief twitter-thread with @nliber
+* this proposal came out of this brief twitter thread: https://twitter.com/janwilmans/status/1308175343824580608
 * examples taken out of context from Mustafa Kemal GILOR's stackoverflow post
 
 # References
