@@ -34,6 +34,8 @@ Initial version
 Standard library containers have an initial memory allocation strategy, common practice seems to be to do no heap allocation until elements are add that need it. 
 The current practice is that containers have to be constructed first and a then have space reserved by called the .reserve() method. Also some container do not have a reserve method.
 
+
+
 * todo, explore std::string 
 * todo, explore std::vector<T> 
 * todo, explore std::function<T>, stack vs. heap allocation
@@ -64,11 +66,41 @@ This section is for naming, conventions and pinning down details to make it suit
 
 ## Alternatives
 
+an alternative syntax:
+
 ```
 std::string s(std::reserve_capacity(1000));
 std::vector v(std::reserve_capacity(1000));
+```
+
+an alternative approach; if we write:
 
 ```
+namespace nonstd
+{
+    auto reserve = [](std::size_t size){
+        std::string result;
+        result.reserve(size);
+        return result;
+    };
+}
+
+    std::string str(nonstd::reserve(1000));
+``` 
+
+could that be optimized to effectively do what we want? 
+
+# Acknowledgements
+
+* this proposal came out of a brief twitter-thread with @nliber
+* examples taken from Mustafa Kemal GILOR's stackoverflow post
+
+# References
+
+* https://stackoverflow.com/questions/32738879/why-is-there-no-reserving-constructor-for-stdstring
+
+
+
 
 
 
