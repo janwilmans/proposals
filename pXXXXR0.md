@@ -85,7 +85,7 @@ namespace nonstd
     };
 }
 
-    std::string str(nonstd::reserve(1000));
+std::string str(nonstd::reserve(1000));
 ``` 
 
 could that be optimized to effectively do what we want? 
