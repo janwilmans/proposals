@@ -31,8 +31,8 @@ Initial version
 
 ## Motivation
 
-Standard library containers have an initial memory allocation strategy, common practice seems to be to do no heap allocation until elements are add that need it. 
-The current practice is that containers have to be constructed first and a then have space reserved by called the .reserve() method. Also some container do not have a reserve method.
+Standard library containers have an initial memory allocation strategy, common practice seems to be, to do no heap allocation until elements are added that need it. 
+The current practice is that containers have to be constructed first and then have space reserved by calling the .reserve() method. Not all containers have a reserve method;  std::map, std::set, std::deque, std::stack for example do not, while std::string, std::vector and std::unordered_map do have it.
 
 The reserving constructor comes with new optimization oppertunities, for example `std::string s(std::reserve, 64);` could decide to store the string on the stack, avoiding a heap allocation. This is particularly interesting for locality of small containers such as std::function<T> that currenly have no way to specify when they start heap-allocating.
  
