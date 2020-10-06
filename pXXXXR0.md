@@ -31,11 +31,10 @@ Initial version
 
 ## Motivation
 
-Standard library containers have an initial memory allocation strategy, common practice seems to be, to do no heap allocation until elements are added that need it. 
+Standard library containers have an initial memory allocation strategy, common practice seems to be, to do no allocation until elements are added that need it. 
 The current practice is that containers have to be constructed first and then have space reserved by calling the .reserve() method. Not all containers have a reserve method;  std::map, std::set, std::deque, std::stack for example do not, while std::string, std::vector and std::unordered_map do have it.
 
-The reserving constructor comes with new optimization oppertunities, for example `std::string s(std::reserve, 64);` could decide to store the string on the stack, avoiding a heap allocation. This is particularly interesting for locality of small containers such as std::function<T> that currenly have no way to specify when they start heap-allocating.
- 
+The reserving constructor comes with new optimization oppertunities, for example `std::string s(std::reserve, 64);` could decide to create a bigger SOO (small-object optimization) buffer, avoiding extra allocations. This is particularly interesting for locality of small containers such as std::string or std::function<T> that currenly have no way to specify this. 
  
 * todo, explore std::string, stack vs. heap allocation
 * todo, explore std::stack
@@ -60,6 +59,12 @@ The std::reserve syntax here is to disallow `std::string s({}, 1000);`
 
 ## Overview
 
+The goal of this proposal is twofold, 
+1) to be able to specific the capacity to reserve on container construction 
+2) to give some control over small-object optimizations
+
+To achieve the second goal the specified reserved capacity shouldn't be merely a suggestion.
+
 ## Consistency
 
 discuss consistency over containers and stack/heap allocation.
@@ -77,7 +82,7 @@ std::string s(std::reserve_capacity(1000));
 std::vector v(std::reserve_capacity(1000));
 ```
 
-an alternative approach; if we write:
+alternative approach 1); if we write:
 
 ```
 namespace nonstd
@@ -91,8 +96,17 @@ namespace nonstd
 
 std::string str(nonstd::reserve(1000));
 ``` 
+could the above be optimized to effectively do what we want in terms for memory capacity reservation? It certainly does nothing to
+achieve the second goal.
 
-could that be optimized to effectively do what we want? 
+alternative approach 2)
+
+```
+std::string s(std::reserve_stack, 1000);
+std::vector<int> v(std::reserve_heap, 1000);
+```
+
+This wording isn't right sinse the C++ abstract machine doesn't define a stack, but the idea here is that 'std::reserve_stack' would create a 1000-byte small-object buffer and that `std::reserve_heap` would dispense with the small-object buffer entirely and do the heap allocation immediataly. 
 
 # Acknowledgements
 
