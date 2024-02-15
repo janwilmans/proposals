@@ -96,8 +96,7 @@ namespace nonstd
 
 std::string str(nonstd::reserve(1000));
 ``` 
-could the above be optimized to effectively do what we want in terms for memory capacity reservation? It certainly does nothing to
-achieve the second goal.
+could the above be optimized to effectively do what we want in terms for memory capacity reservation? It certainly does nothing to achieve the second goal.
 
 alternative approach 2)
 
@@ -106,7 +105,7 @@ std::string s(std::reserve_stack, 1000);
 std::vector<int> v(std::reserve_heap, 1000);
 ```
 
-This wording isn't right sinse the C++ abstract machine doesn't define a stack, but the idea here is that 'std::reserve_stack' would create a 1000-byte small-object buffer and that `std::reserve_heap` would dispense with the small-object buffer entirely and do the heap allocation immediataly. 
+This wording is not right since the C++ abstract machine does not define a stack, but the idea here is that 'std::reserve_stack' would create a 1000-byte small-object buffer and that `std::reserve_heap` would dispense with the small-object buffer entirely and do the heap allocation immediately. Problem with this approach is, the choise for 'no small-object buffer' is a compile time decision, so it probably needs to be a template argument.
 
 # Acknowledgements
 
