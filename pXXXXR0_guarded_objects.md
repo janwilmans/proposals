@@ -1,6 +1,7 @@
 # pXXXXR0
 
-guarded objects - express the combination of a class and its locking mechanism 
+guarded objects - express the combination of a class and its locking mechanism
+
 Draft for Proposal, 6 September 2024
 
 ### Authors:
