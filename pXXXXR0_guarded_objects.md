@@ -13,10 +13,10 @@ Draft for Proposal, 6 September 2024
   - Library Working Group (Wording and Consistency)
 
 ### Project:
-  * ISO JTC1/SC22/WG21: Programming Language C++
+  - ISO JTC1/SC22/WG21: Programming Language C++
   
 ### Current version:
-  * https://github.com/janwilmans/proposals/blob/master/pXXXXR0_reserving_constructors.md
+  - https://github.com/janwilmans/proposals/blob/master/pXXXXR0_guarded_objects.md
 
 ### Reply To: 
   * Jan Wilmans <janwilmans@gmail.com>
