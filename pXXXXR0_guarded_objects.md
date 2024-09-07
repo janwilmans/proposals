@@ -134,7 +134,7 @@ Alternatively:
 
 ```
 std::guared<std::string> guarded_string;
-std::guared_lock<std::string, std::mutex> guarded_string;   // second argument can be any class L that has the [thread.req.lockable]](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4950.pdf) interface
+std::guared_lock<std::string, std::mutex> guarded_string;   // The type of second argument satisfies the [thread.req.lockable] interface
 ```
 
 ## Overview
