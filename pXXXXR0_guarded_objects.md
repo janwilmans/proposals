@@ -49,6 +49,8 @@ Tying data to its locking mechanism using a distinct type makes ownership and ac
 Such implementations are pessimizing single-thread use and have locking overhead on every API call. For demonstration purposes, here is a naive implementation of a 'guarding' class still having the locking overhead on every API call:
 
 ```
+// Naive example without strong ownership on the API and still having locking overhead
+
 #include <mutex>
 #include <string>
 #include <iostream>
@@ -84,7 +86,7 @@ int main() {
 }
 ```
 
-[compiler explorer link](https://godbolt.org/z/63EMYWehT](https://cppcoach.godbolt.org/z/4Evees8nd)
+[compiler explorer link](https://cppcoach.godbolt.org/z/4Evees8nd)
 
 ## Prevents accidental access without locking
 
