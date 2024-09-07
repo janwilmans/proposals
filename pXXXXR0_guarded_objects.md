@@ -46,7 +46,7 @@ With a type that directly ties the data and its locking mechanism, the API for i
 ## Strong ownership semantics
 
 Tying data to its locking mechanism using a distinct type makes ownership and access patterns explicit. This prevents a common anti-pattern where thread-safety is embedded into the design of a class, such as a thread-safe queues or synchronized lists.
-Such implementations are pessimizing single-thread use and have locking overhead on every API call. For demonstration purposes, here is a naive implementation of a 'guarding' still having the locking overhead on every API call:
+Such implementations are pessimizing single-thread use and have locking overhead on every API call. For demonstration purposes, here is a naive implementation of a 'guarding' class still having the locking overhead on every API call:
 
 ```
 #include <mutex>
@@ -84,7 +84,7 @@ int main() {
 }
 ```
 
-[compiler explorer link]([https://godbolt.org/z/63EMYWehT](https://cppcoach.godbolt.org/z/4Evees8nd))
+[compiler explorer link](https://godbolt.org/z/63EMYWehT](https://cppcoach.godbolt.org/z/4Evees8nd)
 
 ## Prevents accidental access without locking
 
