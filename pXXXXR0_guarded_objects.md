@@ -1,6 +1,6 @@
 # pXXXXR0
 
-guarded objects - express the combination of a class and its locking mechanism
+guarded objects - make the relationship of class and its locking mechanism explicitly expressable
 
 Draft for Proposal, 6 September 2024
 
@@ -24,8 +24,8 @@ Draft for Proposal, 6 September 2024
 
 # Abstract
 
-In multithreaded programming locking mechanisms are used to prevent concurrent access to data. Common practice to create a locking mechansim, lets say an std::mutex along side the data it is protecting.
-However, the relationship is only implied and expressed in code only by 'doing it right' in all places. This proposal intents to provide a way to clearly express this relationship are make it impossible to access data without locking its associated guarding mechanism.
+In multithreaded programming locking mechanisms are used to prevent concurrent access to data. Common practice is to create a locking mechansim, lets say an std::mutex along side the data it is protecting.
+However, the relationship is only implied and expressed in code only by naming variables and/or 'doing it right' in all places. This proposal intents to provide a way to clearly express the relationship and make it impossible to access the data without locking its associated guarding mechanism.
 
 # Revision History
 
@@ -43,10 +43,14 @@ The `guarded` type encapsulates the locking mechanism, ensuring that locks are a
 
 With a type that directly ties the data and its locking mechanism, the API for interacting with the protected data becomes clearer. Users don’t have to worry about manually locking and unlocking. Instead, the locking and unlocking can be handled internally within the type. This simplifies the API and reduces the cognitive load.
 
-## Strong ownership semantics
+## Strong ownership semantics / RAII guarantees
 
-Tying data to its locking mechanism using a distinct type makes ownership and access patterns explicit. This prevents a common anti-pattern where thread-safety is embedded into the design of a class, such as a thread-safe queues or synchronized lists.
-Such implementations are pessimizing single-thread use and have locking overhead on every API call. For demonstration purposes, here is a naive implementation of a 'guarding' class still having the locking overhead on every API call:
+By returning a handle to the locked object (see futher down for examples) we make the ownership and the access pattern explicit. 
+The locking mechanism is based on RAII (Resource Acquisition Is Initialization), the type can automatically handle acquiring and releasing the lock in a scoped manner. This provides automatic and exception-safe locking.
+
+## Separation of concerns
+
+The guarded type eliminates the need to embed thread-safety directly into the design of a class. Such implementations are pessimizing single-threaded use and have locking overhead on every API call. For demonstration purposes, here is a naive implementation of a 'guarding' class still having the locking overhead on every API call:
 
 ```
 // Naive example without strong ownership on the API and still having locking overhead
@@ -95,40 +99,48 @@ By requiring access to the data through the guarded type, you make it harder (or
 ## Easier to reason about the code / better readability
 
 When locking is tightly coupled with the data it protects, it becomes easier to reason about the behavior of the code. A guarded<std::string> makes it clear that access to the std::string is controlled and synchronized. 
-There is also no question about what the lock is protecting, this makes the code more understandble and maintainable.
+There is also no question about what the lock is protecting, this makes the code more understandble and maintainable. The guarded type abstracts away the details of how the concurrency mechanisms are implemented. Users of the type do not need to worry about whether the data is protected by a mutex, spinlock, or some other concurrency primitive; they just know the data access is synchronized properly.
 
-## RAII guarantees
-
-The locking mechanism is based on RAII (Resource Acquisition Is Initialization), the type can automatically handle acquiring and releasing the lock in a scoped manner. This provides automatic and exception-safe locking.
-
-## Encourages correct usage pattern
-
-A guarded type encourages correct locking usage patterns because it forces the user to think of the data as inherently guarded by the lock. This avoids situations where a developer might manually manage a mutex alongside some data in a way that introduces subtle bugs or race conditions.
-
-## Concurrency abstractions
-
-The guarded type abstracts away the details of how the concurrency mechanisms are implemented. Users of the type do not need to worry about whether the data is protected by a mutex, spinlock, or some other concurrency primitive; they just know the data access is synchronized properly.
-
-# Design Considerations
+# Design considerations
 
 ## Synopsis
 
 An example of what the result could look like:
 
 ```
-std::guared<std::string> guarded_string;
-std::guared_<std::string, std::mutex> guarded_string; // user_defined_lock has a .lock()/.unlock() interface
+#include <string>
+#include <iostream>
 
+#include "https://raw.githubusercontent.com/copperspice/cs_libguarded/master/src/cs_plain_guarded.h"
+
+int main() {
+    libguarded::plain_guarded<std::string> guarded_string;
+    
+    auto accessor = guarded_string.lock();
+
+    // Modify the string safely.
+    *accessor = "Hello, World!";
+    
+    // Read the string safely.
+    std::cout << *accessor << '\n';
+    return 0;
+}
 ```
 
+[compiler explorer link](https://cppcoach.godbolt.org/z/PTv1MG4oq)
+
+Alternatively:
+
+```
+std::guared<std::string> guarded_string;
+std::guared_lock<std::string, std::mutex> guarded_string; // user_defined_lock has a .lock()/.unlock() interface
+```
 
 ## Overview
 
 The goal of this proposal is ...
 1) to express the relationship 
 2) to make it impossible to access T without locking its guarding mechanism
-
-
 
 ## Consistency
 
@@ -138,18 +150,11 @@ discuss locking interface
 
 This section is for naming, conventions and pinning down details to make it suitable for the standard.
 
-
 # Acknowledgements
 
 - this proposal is based on the the work of Ansel Sermersheim and his https://github.com/copperspice/cs_libguarded library
 
-
 # References
 
 - https://github.com/copperspice/cs_libguarded
-
-
-
-
-
-
+- ([thread.req.lockable])[https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4950.pdf] Cpp17BasicLockable requirements 
