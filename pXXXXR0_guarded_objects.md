@@ -130,26 +130,26 @@ int main() {
 
 [compiler explorer link](https://cppcoach.godbolt.org/z/PTv1MG4oq)
 
-Alternatively:
-
-```
-std::guared<std::string> guarded_string;
-std::guared_lock<std::string, std::mutex> guarded_string;   // The type of second argument satisfies the [thread.req.lockable] interface
-```
-
 ## Overview
 
-The goal of this proposal is ...
-1) to express the relationship 
-2) to make it impossible to access T without locking its guarding mechanism
+The goal of this proposal is to provide a type:
 
-## Consistency
+1) to explicitly express the relationship between data and its guarding mechanism
+2) to make it impossible to access the data without locking its guarding mechanism
+3) to make unlocking automatic and exception safe
 
-discuss locking interface
+Discuss customizable [thread.req.lockable] interface with Cpp17BasicLockable requirements
+
+```
+std::guared<T>;
+std::guared<T, L>;   // The type of second argument satisfies the [thread.req.lockable] interface
+```
 
 # Bikeshedding
 
 This section is for naming, conventions and pinning down details to make it suitable for the standard.
+
+As a suggestion: `std::guarded<T>` would express the intent.
 
 # Acknowledgements
 
