@@ -116,15 +116,16 @@ An example of what the result could look like:
 int main() {
     libguarded::plain_guarded<std::string> guarded_string;
     
-    auto accessor = guarded_string.lock();
+    auto accessor = guarded_string.lock();  // as long as 'accessor' remains in scope, the mechanism remains locked.
 
-    // Modify the string safely.
-    *accessor = "Hello, World!";
+    // Modify the string safely.         
+    *accessor = "Hello, World!";  
     
     // Read the string safely.
     std::cout << *accessor << '\n';
+
     return 0;
-}
+}  // accessor leaves scope, automatically unlocking
 ```
 
 [compiler explorer link](https://cppcoach.godbolt.org/z/PTv1MG4oq)
