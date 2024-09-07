@@ -158,4 +158,4 @@ This section is for naming, conventions and pinning down details to make it suit
 # References
 
 - https://github.com/copperspice/cs_libguarded
-- ([thread.req.lockable])[https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4950.pdf] Cpp17BasicLockable requirements 
+- [[thread.req.lockable]](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4950.pdf) Cpp17BasicLockable requirements 
