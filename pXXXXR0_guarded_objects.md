@@ -46,9 +46,13 @@ With a type that directly ties the data and its locking mechanism, the API for i
 ## Strong ownership semantics
 
 Tying data to its locking mechanism using a distinct type makes ownership and access patterns explicit. This prevents a common anti-pattern where thread-safety is embedded into the design of a class, such as a thread-safe queues or synchronized lists.
-Such implementations are pessimizing single-thread use and have locking overhead on every API call. For demonstration purposes, here is a naive implementation of a 'guarding' class the doesn't take will still have locking overhead on every API call:
+Such implementations are pessimizing single-thread use and have locking overhead on every API call. For demonstration purposes, here is a naive implementation of a 'guarding' still having the locking overhead on every API call:
 
 ```
+#include <mutex>
+#include <string>
+#include <iostream>
+
 template<typename T>
 class naive_guarded {
 private:
@@ -57,7 +61,7 @@ private:
 
 public:
     template<typename Func>
-    auto with_lock(Func&& func) const {
+    auto with_lock(Func&& func) {
         std::lock_guard<std::mutex> lock(mtx);
         return func(data);  // Pass the data to the provided function.
     }
@@ -73,12 +77,14 @@ int main() {
     
     // Read the string safely.
     naive_guarded_string.with_lock([](const std::string& str) { // locking overhead
-        std::cout << str << std::endl;
+        std::cout << str << '\n';
     });
 
     return 0;
 }
 ```
+
+[compiler explorer link]([https://godbolt.org/z/63EMYWehT](https://cppcoach.godbolt.org/z/4Evees8nd))
 
 ## Prevents accidental access without locking
 
