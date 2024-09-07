@@ -35,7 +35,71 @@ Initial version
 
 ## Motivation
 
+## Encapsulation of locking logic
 
+The `guarded` type encapsulates the locking mechanism, ensuring that locks are acquired and released properly when accessing the protected data. This reduces the chances of errors such as forgetting to unlock a mutex or accidentally leaving a shared resource in an inconsistent state due to race conditions.
+
+## Simplified API
+
+With a type that directly ties the data and its locking mechanism, the API for interacting with the protected data becomes clearer. Users don’t have to worry about manually locking and unlocking. Instead, the locking and unlocking can be handled internally within the type. This simplifies the API and reduces the cognitive load.
+
+## Strong ownership semantics
+
+Tying data to its locking mechanism using a distinct type makes ownership and access patterns explicit. This prevents a common anti-pattern where thread-safety is embedded into the design of a class, such as a thread-safe queues or synchronized lists.
+Such implementations are pessimizing single-thread use and have locking overhead on every API call. For demonstration purposes, here is a naive implementation of a 'guarding' class the doesn't take will still have locking overhead on every API call:
+
+```
+template<typename T>
+class naive_guarded {
+private:
+    T data;
+    mutable std::mutex mtx;
+
+public:
+    template<typename Func>
+    auto with_lock(Func&& func) const {
+        std::lock_guard<std::mutex> lock(mtx);
+        return func(data);  // Pass the data to the provided function.
+    }
+};
+
+int main() {
+    naive_guarded<std::string> naive_guarded_string;
+    
+    // Modify the string safely.
+    naive_guarded_string.with_lock([](std::string& str) {     // locking overhead
+        str = "Hello, World!";
+    });
+    
+    // Read the string safely.
+    naive_guarded_string.with_lock([](const std::string& str) { // locking overhead
+        std::cout << str << std::endl;
+    });
+
+    return 0;
+}
+```
+
+## Prevents accidental access without locking
+
+By requiring access to the data through the guarded type, you make it harder (or impossible) to accidentally access the data without properly locking it first. Without such a type, a programmer might forget to lock the corresponding mutex, leading to potential data races and undefined behavior.
+
+## Easier to reason about the code / better readability
+
+When locking is tightly coupled with the data it protects, it becomes easier to reason about the behavior of the code. A guarded<std::string> makes it clear that access to the std::string is controlled and synchronized. 
+There is also no question about what the lock is protecting, this makes the code more understandble and maintainable.
+
+## RAII guarantees
+
+The locking mechanism is based on RAII (Resource Acquisition Is Initialization), the type can automatically handle acquiring and releasing the lock in a scoped manner. This provides automatic and exception-safe locking.
+
+## Encourages correct usage pattern
+
+A guarded type encourages correct locking usage patterns because it forces the user to think of the data as inherently guarded by the lock. This avoids situations where a developer might manually manage a mutex alongside some data in a way that introduces subtle bugs or race conditions.
+
+## Concurrency abstractions
+
+The guarded type abstracts away the details of how the concurrency mechanisms are implemented. Users of the type do not need to worry about whether the data is protected by a mutex, spinlock, or some other concurrency primitive; they just know the data access is synchronized properly.
 
 # Design Considerations
 
@@ -45,7 +109,7 @@ An example of what the result could look like:
 
 ```
 std::guared<std::string> guarded_string;
-std::guared<std::string, user_defined_lock> guarded_string; // user_defined_lock has a .lock()/.unlock() interface
+std::guared_<std::string, std::mutex> guarded_string; // user_defined_lock has a .lock()/.unlock() interface
 
 ```
 
