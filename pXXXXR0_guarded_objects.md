@@ -136,6 +136,38 @@ int main() {
 
 [compiler explorer link](https://cppcoach.godbolt.org/z/PTv1MG4oq)
 
+Demonstration of clear separation of the class implementation and the sychronisation of the class.
+
+```
+#include <string>
+#include <vector>
+#include <iostream>
+
+#include "https://raw.githubusercontent.com/copperspice/cs_libguarded/master/src/cs_plain_guarded.h"
+
+struct person
+{
+    std::string name;
+};
+
+using contacts_t = std::vector<person>;
+
+void print(const contacts_t& contacts)
+{
+    for (const auto& person: contacts)
+    {
+        std::cout << person.name << '\n';
+    }
+}
+
+int main() 
+{
+    libguarded::plain_guarded<contacts_t> synchronized_contacts;  // specifiy only synchronized access to contacts_t is possible
+    print(*synchronized_contacts.lock());                         // use of the lock
+    return 0;
+}
+```
+
 
 Discuss customizable [thread.req.lockable] interface with Cpp17BasicLockable requirements
 
