@@ -104,14 +104,30 @@ using GuardedQueue = libguarded::plain_guarded<std::queue<T>>;
 
 bool example()
 {
-    GuardedQueue<int> m_guarded_queue;
+    GuardedQueue<int> guarded_queue;
 
     // it is not possible to access the std::queue directly, without calling lock()
-    return m_guarded_queue.lock()->empty(); 
+    return guarded_queue.lock()->empty(); 
+}
+
+void example2()
+{
+    GuardedQueue<int> guarded_queue;
+
+    // it is not possible to access the std::queue directly, without calling lock()
+    auto locked_q = guarded_queue.lock();
+
+    // execute code with the lock held.
+    if (locked_q->empty())
+    {
+        // do things
+    }
+    
+    // lock leaves scope.
 }
 ```
 
-[compiler explorer link](https://godbolt.org/z/5aEMGbnKj)
+[compiler explorer link](https://godbolt.org/z/ccqaPsfsh)
 
 For demonstration purposes, here is a naive implementation of a 'guarding' class that allows you to pass in a function:
 
