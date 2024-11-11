@@ -2,7 +2,7 @@
 
 guarded objects - make the relationship between objects and their locking mechanism explicitly expressable and hard to use incorrect
 
-Draft for Proposal, 8 September 2024
+Draft for Proposal, 11 November 2024
 
 ### Authors:
 
@@ -24,8 +24,8 @@ Draft for Proposal, 8 September 2024
 
 # Abstract
 
-In multithreaded programming locking mechanisms are used to prevent concurrent access to data. Common practice is to create a locking mechansim, lets say an **std::mutex** along side the data it is protecting.
-However, the relationship is only implied and expressed in code only by naming variables and/or 'doing it right' in all places. This proposal improves this by providing a way to clearly express the relationship and make it impossible to access the data without locking its associated guarding mechanism.
+In multithreaded programming locking mechanisms are used to prevent concurrent access to data. Common practice is to create a locking mechansim, lets say an **std::mutex** along side the **data** it is protecting.
+However, the relationship between the mutex and the data is only implied and expressed in code only by naming variables and/or 'doing it right' in all places. This proposal improves this by providing a way to clearly express the relationship and make it impossible to access the data without locking its associated guarding mechanism.
 
 # Revision History
 
