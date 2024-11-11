@@ -53,114 +53,67 @@ The locking mechanism is based on RAII (Resource Acquisition Is Initialization),
 ## Separation of concerns
 
 The guarded type eliminates the need to embed thread-safety directly into the design of classes. Such implementations are pessimizing single-threaded use and have locking overhead on every API call. 
-An example of a classic 'synchronized' queue:
+An example of a 'synchronized' queue:
 
 ```
 #include <queue>
 #include <mutex>
-#include <condition_variable>
-#include <chrono>
+
+#include <cs_plain_guarded.h>
 
 template <typename T>
 class SynchronizedQueue
 {
 public:
-    explicit SynchronizedQueue(size_t maxSize = 0) :
-        m_maxSize(maxSize)
-    {
-    }
-
     bool Empty() const
     {
         std::unique_lock<std::mutex> lock(m_mtx);
-        return Empty(lock);
-    }
-
-    bool Full() const
-    {
-        std::unique_lock<std::mutex> lock(m_mtx);
-        return Full(lock);
-    }
-
-    size_t Size() const
-    {
-        std::unique_lock<std::mutex> lock(m_mtx);
-        return m_q.size();
-    }
-
-    size_t MaxSize() const
-    {
-        return m_maxSize;
-    }
-
-    void WaitForNotFull() const
-    {
-        std::unique_lock<std::mutex> lock(m_mtx);
-        m_cond.wait(lock, [&]() { return !Full(lock); });
-    }
-
-    template <typename Clock, typename Duration>
-    bool WaitForNotFull(const std::chrono::time_point<Clock, Duration>& time) const
-    {
-        std::unique_lock<std::mutex> lock(m_mtx);
-        return m_cond.wait_until(lock, time, [&]() { return !Full(lock); });
-    }
-
-    void WaitForNotEmpty() const
-    {
-        std::unique_lock<std::mutex> lock(m_mtx);
-        m_cond.wait(lock, [&]() { return !Empty(lock); });
-    }
-
-    template <typename Clock, typename Duration>
-    bool WaitForNotEmpty(const std::chrono::time_point<Clock, Duration>& time) const
-    {
-        std::unique_lock<std::mutex> lock(m_mtx);
-        return m_cond.wait_until(lock, time, [&]() { return !Empty(lock); });
+        return m_q.empty();
     }
 
     void Push(T t)
     {
         std::unique_lock<std::mutex> lock(m_mtx);
-        m_cond.wait(lock, [&]() { return !Full(lock); });
         m_q.push(std::move(t));
-        lock.unlock();
-        m_cond.notify_one();
     }
 
     T Pop()
     {
         std::unique_lock<std::mutex> lock(m_mtx);
-        m_cond.wait(lock, [&]() { return !Empty(lock); });
         T t(m_q.front());
         m_q.pop();
-        lock.unlock();
-        m_cond.notify_one();
         return t;
     }
 
-private:
-    bool Empty(std::unique_lock<std::mutex>&) const
-    {
-        return m_q.empty();
-    }
+    mutable std::mutex m_mtx;  
 
-    bool Full(std::unique_lock<std::mutex>&) const
-    {
-        return m_maxSize > 0 && m_q.size() == m_maxSize;
-    }
-
-    size_t m_maxSize;
-    mutable std::mutex m_mtx;
-    mutable std::condition_variable m_cond;
-    std::queue<T> m_q;
+    // here there is the implied agreement, that 'm_mtx' should be locked 
+    // before accessing m_q, however nothing enforces this.
+    std::queue<T> m_q;           
 };
+
 ```
 
-Notice that the code above is fragile in the sense that every public method **must** acquire the lock and forgetting to do so is only cheked by reviewing.
-Also, the private methods 'try' to make it harder to use incorrectly by requiring reference to a lock to be passed in, but not actually doing anything with that argument.
+Notice that the code above is fragile in the sense that every public method **must** acquire the lock and forgetting to do so is only checkable by reviewing.
 
-For demonstration purposes, here is a naive implementation of a 'guarding' class.
+Alternative with a guarded lock from the [`cs_libguarded`](https://github.com/copperspice/cs_libguarded) library:
+
+```
+template <typename T>
+using GuardedQueue = libguarded::plain_guarded<std::queue<T>>;
+
+bool example()
+{
+    GuardedQueue<int> m_guarded_queue;
+
+    // it is not possible to access the std::queue directly, without calling lock()
+    return m_guarded_queue.lock()->empty(); 
+}
+```
+
+[compiler explorer link](https://godbolt.org/z/5aEMGbnKj)
+
+For demonstration purposes, here is a naive implementation of a 'guarding' class that allows you to pass in a function:
 
 ```
 // Naive example how an operation could be passed in, to perform a set of operations while holding the lock
