@@ -1,4 +1,4 @@
-# pXXXXR0
+# p3497R0 - guarded objects
 
 guarded objects - make the relationship between objects and their locking mechanism explicitly expressable and hard to use incorrect
 
@@ -26,6 +26,8 @@ Draft for Proposal, 11 November 2024
 
 In multithreaded programming locking mechanisms are used to prevent concurrent access to data. Common practice is to create a locking mechansim, lets say an **std::mutex** along side the **data** it is protecting.
 However, the relationship between the mutex and the data is only implied and expressed in code only by naming variables and/or 'doing it right' in all places. This proposal improves this by providing a way to clearly express the relationship and make it impossible to access the data without locking its associated guarding mechanism.
+
+Note: it has been brought to attention that synchronized_value in the Concurrency TS 2 (n4953)[https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4953.pdf] is solving part of the problem we are addressing in this paper.
 
 # Revision History
 
@@ -269,4 +271,4 @@ As a suggestion: `std::guarded<T>` would express the intent.
 # References
 
 - https://github.com/copperspice/cs_libguarded
-- [[thread.req.lockable]](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4950.pdf) Cpp17BasicLockable requirements 
+- [[thread.req.lockable]](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4950.pdf) Cpp17BasicLockable requirements
