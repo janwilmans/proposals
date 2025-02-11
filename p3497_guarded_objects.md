@@ -1,6 +1,6 @@
 # p3497R1 - guarded objects
 
-guarded objects - make the relationship between objects and their locking mechanism explicitly expressable and hard to use incorrect
+guarded objects - make the relationship between objects and their locking mechanism explicitly expressible and hard to use incorrect.
 
 Draft for Proposal, 11 Februari 2025
 
@@ -24,7 +24,7 @@ Draft for Proposal, 11 Februari 2025
 
 # Abstract
 
-In multithreaded programming locking mechanisms are used to prevent concurrent access to data. Common practice is to create a locking mechansim, lets say an **std::mutex** along side the **data** it is protecting.
+In multithreaded programming locking mechanisms are used to prevent concurrent access to data. Common practice is to create a locking mechanism, let's say an **std::mutex** alongside the **data** it is protecting.
 However, the relationship between the mutex and the data is only implied and expressed in code only by naming variables and/or 'doing it right' in all places. This proposal improves this by providing a way to clearly express the relationship and make it impossible to access the data without locking its associated guarding mechanism.
 
 Note: it has been brought to attention that synchronized_value in the Concurrency TS 2 [n4953](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4953.pdf) is solving part of the problem we are addressing in this paper.
@@ -37,7 +37,7 @@ Initial version,
 
 ## Revision 1,  11 Februari 2025
 
-Added feedback from the reflector pointing out [n4953](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4953.pdf) similairities.
+Added feedback from the reflector pointing out [n4953](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4953.pdf) similarities.
 
 ## Motivation
 
@@ -52,7 +52,7 @@ By combining the the data and its locking mechanism in one type they have the sa
 
 ## Strong ownership semantics / RAII guarantees
 
-The only wat to access data is to call one of the locking functions, these functions either return an object (a unique_ptr-like object) that owns the lock, or allows you to pass in an operation that is exectured while holding the lock. It can be used in a familiar way, just like you would use a smart pointer, or when passing in the operation, not dealing with the lock directly at all.
+The only way to access data is to call one of the locking functions, these functions either return an object (a unique_ptr-like object) that owns the lock, or allows you to pass in an operation that is executed while holding the lock. It can be used in a familiar way, just like you would use a smart pointer, or when passing in the operation, not dealing with the lock directly at all.
 
 The locking mechanism is based on RAII (Resource Acquisition Is Initialization), the type handles acquiring and releasing the lock in a scoped manner. This makes sure the lock is always released no matter how you leave the scope, returning of by an exception for example.
 
@@ -222,7 +222,7 @@ int main() {
 
 [compiler explorer link](https://cppcoach.godbolt.org/z/PTv1MG4oq)
 
-Demonstration of clear separation of the class implementation and the sychronisation of the class.
+Demonstration of clear separation of the class implementation and the synchronization of the class.
 
 ```
 #include <string>
@@ -265,14 +265,14 @@ std::guared<T, L>;   // The type of second argument satisfies the [thread.req.lo
 # inital feedback
 
 ```
-Ville> The proposal prompts me to ask what the diffence between the plain_guarded/std::guarded proposed in it and the synchronized_value in the Concurrency TS 2 is. They seem to be solving
+Ville> The proposal prompts me to ask what the difference between the plain_guarded/std::guarded proposed in it and the synchronized_value in the Concurrency TS 2 is. They seem to be solving
 a very similar if not identical problem? https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4953.pdf
 ```
 
 Yes, `synchronized_value<T>::apply()` (which I was not aware of, thanks for pointing it out) is very similar to naive_guarded<t>.with_lock().
-This implementation suggests to able have a handle-object to represent the 'locked' state (see example 2). This is a move-only handle can be passed around, instead of locking/unlocking for every synchronized_value<T>::apply().
+This implementation suggests having a handle object to represent the 'locked' state (see example 2). This is a move-only handle can be passed around, instead of locking/unlocking for every synchronized_value<T>::apply().
 
-# Bikeshedding
+# Bike shedding
 
 This section is for naming, conventions and pinning down details to make it suitable for the standard.
 
@@ -280,7 +280,7 @@ As a suggestion: `std::guarded<T>` would express the intent.
 
 # Acknowledgements
 
-- this proposal is based on the the work of Ansel Sermersheim and his https://github.com/copperspice/cs_libguarded library
+- this proposal is based on the work of Ansel Sermersheim and his https://github.com/copperspice/cs_libguarded library
 
 # References
 
