@@ -258,6 +258,16 @@ std::guared<T>;
 std::guared<T, L>;   // The type of second argument satisfies the [thread.req.lockable] interface
 ```
 
+# inital feedback
+
+```
+Ville> The proposal prompts me to ask what the diffence between the plain_guarded/std::guarded proposed in it and the synchronized_value in the Concurrency TS 2 is. They seem to be solving
+a very similar if not identical problem? https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4953.pdf
+```
+
+Yes, `synchronized_value<T>::apply()` (which I was not aware of, thanks for pointing it out) is very similar to naive_guarded<t>.with_lock().
+This implementation suggests to able have a handle-object to represent the 'locked' state (see example 2). This is a move-only handle can be passed around, instead of locking/unlocking for every synchronized_value<T>::apply().
+
 # Bikeshedding
 
 This section is for naming, conventions and pinning down details to make it suitable for the standard.
