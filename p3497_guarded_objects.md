@@ -27,7 +27,7 @@ Draft for Proposal, 11 Februari 2025
 In multithreaded programming locking mechanisms are used to prevent concurrent access to data. Common practice is to create a locking mechansim, lets say an **std::mutex** along side the **data** it is protecting.
 However, the relationship between the mutex and the data is only implied and expressed in code only by naming variables and/or 'doing it right' in all places. This proposal improves this by providing a way to clearly express the relationship and make it impossible to access the data without locking its associated guarding mechanism.
 
-Note: it has been brought to attention that synchronized_value in the Concurrency TS 2 (n4953)[https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4953.pdf] is solving part of the problem we are addressing in this paper.
+Note: it has been brought to attention that synchronized_value in the Concurrency TS 2 [n4953](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4953.pdf) is solving part of the problem we are addressing in this paper.
 
 # Revision History
 
@@ -37,7 +37,7 @@ Initial version,
 
 ## Revision 1,  11 Februari 2025
 
-Added feedback from the reflector pointing out (n4953)[https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4953.pdf] similairities.
+Added feedback from the reflector pointing out [n4953](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4953.pdf) similairities.
 
 ## Motivation
 
