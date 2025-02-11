@@ -37,7 +37,7 @@ Initial version,
 
 ## Revision 1,  11 Februari 2025
 
-Added feedback from the reflector pointing out (n4956)[https://open-std.org/JTC1/SC22/WG21/docs/papers/2023/n4956.pdf] similairities.
+Added feedback from the reflector pointing out (n4953)[https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4953.pdf] similairities.
 
 ## Motivation
 
