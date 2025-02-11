@@ -182,8 +182,7 @@ The example above is a demostration only
 
 ## Easier to reason about the code / better readability
 
-When locking is tightly coupled with the data it protects, it becomes easier to reason about the behavior of the code. A guarded<std::string> makes it clear that access to the std::string is controlled and synchronized. 
-There is also no question about what the lock is protecting, this makes the code more understandble and maintainable. The guarded type abstracts away the details of how the concurrency mechanisms are implemented. Users of the type do not need to worry about whether the data is protected by a mutex, spinlock, or some other concurrency primitive; they get a guarantee the data access is synchronized properly.
+When locking is less tightly coupled with the data it protects, it becomes easier to reason about the behavior of the code. A `guarded<std::string>` makes it clear that access to the `std::string` is controlled and synchronized. There is also no question about what the lock is protecting, this makes the code more understandble and maintainable. The guarded type abstracts away the details of how the concurrency mechanisms are implemented. Users of the type do not need to worry about whether the data is protected by a mutex, spinlock, or some other concurrency primitive; they get a guarantee the data access is synchronized properly.
 
 # Design considerations
 
