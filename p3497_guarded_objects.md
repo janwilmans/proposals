@@ -1,8 +1,8 @@
-# p3497R0 - guarded objects
+# p3497R1 - guarded objects
 
 guarded objects - make the relationship between objects and their locking mechanism explicitly expressable and hard to use incorrect
 
-Draft for Proposal, 11 November 2024
+Draft for Proposal, 11 Februari 2025
 
 ### Authors:
 
@@ -31,9 +31,13 @@ Note: it has been brought to attention that synchronized_value in the Concurrenc
 
 # Revision History
 
-## Revision 0
+## Revision 0, 11 Nov 2025
 
-Initial version
+Initial version, 
+
+## Revision 1,  11 Februari 2025
+
+Added feedback from the reflector pointing out (n4956)[https://open-std.org/JTC1/SC22/WG21/docs/papers/2023/n4956.pdf] similairities.
 
 ## Motivation
 
