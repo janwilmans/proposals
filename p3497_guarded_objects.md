@@ -1,8 +1,8 @@
-# p3497R1 - guarded objects
+# p3497R2 - guarded objects
 
 guarded objects - make the relationship between objects and their locking mechanism explicitly expressible and hard to use incorrect.
 
-Draft for Proposal, 11 Februari 2025
+Draft for Proposal, 13 Februari 2025
 
 ### Authors:
 
@@ -17,7 +17,7 @@ Draft for Proposal, 11 Februari 2025
   - ISO JTC1/SC22/WG21: Programming Language C++
   
 ### Current version:
-  - https://github.com/janwilmans/proposals/blob/master/pXXXXR0_guarded_objects.md
+  - https://github.com/janwilmans/proposals/edit/master/p3497_guarded_objects.md
 
 ### Reply To: 
   * Jan Wilmans <janwilmans@gmail.com>
@@ -27,17 +27,21 @@ Draft for Proposal, 11 Februari 2025
 In multithreaded programming locking mechanisms are used to prevent concurrent access to data. Common practice is to create a locking mechanism, let's say an **std::mutex** alongside the **data** it is protecting.
 However, the relationship between the mutex and the data is only implied and expressed in code only by naming variables and/or 'doing it right' in all places. This proposal improves this by providing a way to clearly express the relationship and make it impossible to access the data without locking its associated guarding mechanism.
 
-Note: it has been brought to attention that synchronized_value in the Concurrency TS 2 [n4953](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4953.pdf) is solving part of the problem we are addressing in this paper.
+Note: it has been brought to attention that synchronized_value<T> in the Concurrency TS 2 [n4953](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4953.pdf) is solving part of the problem we are addressing in this paper.
 
 # Revision History
 
-## Revision 0, 11 Nov 2025
+## Revision 0, 11 November 2025
 
 Initial version, 
 
-## Revision 1,  11 Februari 2025
+## Revision 1,  11 February 2025
 
 Added feedback from the reflector pointing out [n4953](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4953.pdf) similarities.
+
+## Revision 2,  13 February 2025
+
+Added example of passing the accessor object to functions
 
 ## Motivation
 
@@ -48,13 +52,13 @@ By requiring access to the data through the guarded type, you make it harder (or
 
 ## Simplified API
 
-By combining the the data and its locking mechanism in one type they have the same lifetime and the API for interacting with the protected data becomes clearer. Users don’t have to worry about manually locking and unlocking. Instead, the locking and unlocking can be handled internally within the type. This simplifies the API and reduces the cognitive load.
+By combining the data and its locking mechanism in one type they have the same lifetime and the API for interacting with the protected data becomes clearer. Users don’t have to worry about manually locking and unlocking. Instead, the locking and unlocking can be handled internally within the type. This simplifies the API and reduces the cognitive load.
 
 ## Strong ownership semantics / RAII guarantees
 
 The only way to access data is to call one of the locking functions, these functions either return an object (a unique_ptr-like object) that owns the lock, or allows you to pass in an operation that is executed while holding the lock. It can be used in a familiar way, just like you would use a smart pointer, or when passing in the operation, not dealing with the lock directly at all.
 
-The locking mechanism is based on RAII (Resource Acquisition Is Initialization), the type handles acquiring and releasing the lock in a scoped manner. This makes sure the lock is always released no matter how you leave the scope, returning of by an exception for example.
+The locking mechanism is based on RAII (Resource Acquisition Is Initialization), the type handles acquiring and releasing the lock in a scoped manner. This ensures that the lock is always released, regardless of how the scope is exited, whether by returning or due to an exception.
 
 ## Separation of concerns
 
@@ -175,14 +179,13 @@ int main() {
 }
 ```
 
-The example above is a demostration only 
-
+The example above is a demonstration only 
 
 [compiler explorer link](https://cppcoach.godbolt.org/z/4Evees8nd)
 
 ## Easier to reason about the code / better readability
 
-When locking is less tightly coupled with the data it protects, it becomes easier to reason about the behavior of the code. A `guarded<std::string>` makes it clear that access to the `std::string` is controlled and synchronized. There is also no question about what the lock is protecting, this makes the code more understandble and maintainable. The guarded type abstracts away the details of how the concurrency mechanisms are implemented. Users of the type do not need to worry about whether the data is protected by a mutex, spinlock, or some other concurrency primitive; they get a guarantee the data access is synchronized properly.
+When locking is less tightly coupled with the data it protects, it becomes easier to reason about the behavior of the code. A `guarded<std::string>` makes it clear that access to the `std::string` is controlled and synchronized. There is also no question about what the lock is protecting, this makes the code more understandable and maintainable. The guarded type abstracts away the details of how the concurrency mechanisms are implemented. Users of the type do not need to worry about whether the data is protected by a mutex, spinlock, or some other concurrency primitive; they get a guarantee the data access is synchronized properly.
 
 # Design considerations
 
@@ -200,26 +203,44 @@ An example of what the result could look like:
 
 ```
 #include <string>
-#include <iostream>
 
 #include "https://raw.githubusercontent.com/copperspice/cs_libguarded/master/src/cs_plain_guarded.h"
+
+using guarded_string = libguarded::plain_guarded<std::string>;
+
+std::string read(const guarded_string::handle& value) 
+{
+    // The function type enforces that a guarded_string is passed in its locked state
+    return *value;
+}
+
+void write(guarded_string::handle& value) 
+{
+    // The function type enforces that a guarded_string is passed in its locked state
+    *value = "";
+}
 
 int main() {
     libguarded::plain_guarded<std::string> guarded_string;
     
-    auto accessor = guarded_string.lock();  // as long as 'accessor' remains in scope, the mechanism remains locked.
+    auto accessor = guarded_string.lock();
 
-    // Modify the string safely.         
-    *accessor = "Hello, World!";  
+    // Modify the string safely.
+    *accessor = "Hello, World!";
     
-    // Read the string safely.
-    std::cout << *accessor << '\n';
+    // Read attributes of the string safely.
+    const auto size = accessor->size();
 
+    // pass to a functions in a locked state
+    read(accessor);
+    write(accessor);
+    
     return 0;
-}  // accessor leaves scope, automatically unlocking
+} // accessor leaves scope, automatically unlocking
+
 ```
 
-[compiler explorer link](https://cppcoach.godbolt.org/z/PTv1MG4oq)
+[compiler explorer link](https://cppcoach.godbolt.org/z/h9bdYG3TK)
 
 Demonstration of clear separation of the class implementation and the synchronization of the class.
 
