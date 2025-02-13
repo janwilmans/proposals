@@ -290,7 +290,7 @@ a very similar if not identical problem? https://www.open-std.org/jtc1/sc22/wg21
 ```
 
 Yes, `synchronized_value<T>::apply()` (which I was not aware of, thanks for pointing it out) is very similar to naive_guarded<t>.with_lock().
-This implementation suggests having a handle object to represent the 'locked' state (see example 2). This is a move-only handle can be passed around, instead of locking/unlocking for every synchronized_value<T>::apply().
+This implementation suggests _also_ having a handle object to represent the 'locked' state (see example 2). This is a move-only handle can be passed around, instead of locking/unlocking for every synchronized_value<T>::apply().
 
 # Bike shedding
 
