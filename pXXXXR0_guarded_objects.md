@@ -5,7 +5,7 @@
 * pre-hagenberg version: https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2024/p3497r0.html
 * presentated at hagenberg (13-02-2025): https://github.com/janwilmans/proposals/blob/29d878bf2f2029bf41e27c6313e0928d09072e02/p3497_guarded_objects.md (p3497R2)
 
-## The proposal was seem by SG1 in Hagenberg 2025, both Jan and Anthony were present:
+## The proposal was seen by SG1 in Hagenberg 2025, both Jan and Anthony were present:
 
 SG1 Hagenberg 2025 Notes on P3497R0 Guarded Objects:
 
